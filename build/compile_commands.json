@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/byron/Documents/LearningOpenGL/build",
+  "command": "/usr/bin/g++ -I/home/byron/Documents/LearningOpenGL/include -g -std=gnu++17 -o CMakeFiles/OpenGLProject.dir/src/main.cpp.o -c /home/byron/Documents/LearningOpenGL/src/main.cpp",
+  "file": "/home/byron/Documents/LearningOpenGL/src/main.cpp",
+  "output": "/home/byron/Documents/LearningOpenGL/build/CMakeFiles/OpenGLProject.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/byron/Documents/LearningOpenGL/build",
+  "command": "/usr/bin/gcc -I/home/byron/Documents/LearningOpenGL/include -g -o CMakeFiles/OpenGLProject.dir/src/glad.c.o -c /home/byron/Documents/LearningOpenGL/src/glad.c",
+  "file": "/home/byron/Documents/LearningOpenGL/src/glad.c",
+  "output": "/home/byron/Documents/LearningOpenGL/build/CMakeFiles/OpenGLProject.dir/src/glad.c.o"
+}
+]
