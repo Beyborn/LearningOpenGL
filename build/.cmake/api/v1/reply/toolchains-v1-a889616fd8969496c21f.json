@@ -10,13 +10,13 @@
 				{
 					"includeDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1/include",
+						"/usr/lib/gcc/x86_64-pc-linux-gnu/16/include",
 						"/usr/local/include",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1",
+						"/usr/lib/gcc/x86_64-pc-linux-gnu/16",
 						"/usr/lib",
 						"/lib"
 					],
@@ -49,16 +49,16 @@
 				{
 					"includeDirectories" : 
 					[
-						"/usr/include/c++/16.1.1",
-						"/usr/include/c++/16.1.1/x86_64-pc-linux-gnu",
-						"/usr/include/c++/16.1.1/backward",
-						"/usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1/include",
+						"/usr/include/c++/16",
+						"/usr/include/c++/16/x86_64-pc-linux-gnu",
+						"/usr/include/c++/16/backward",
+						"/usr/lib/gcc/x86_64-pc-linux-gnu/16/include",
 						"/usr/local/include",
 						"/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1",
+						"/usr/lib/gcc/x86_64-pc-linux-gnu/16",
 						"/usr/lib",
 						"/lib"
 					],

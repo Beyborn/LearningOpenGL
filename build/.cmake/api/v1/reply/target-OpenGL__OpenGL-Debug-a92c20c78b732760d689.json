@@ -6,8 +6,7 @@
 		"commands" : 
 		[
 			"add_library",
-			"find_package",
-			"set_target_properties"
+			"find_package"
 		],
 		"files" : 
 		[
@@ -32,13 +31,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 734,
-				"parent" : 2
-			},
-			{
-				"command" : 2,
-				"file" : 0,
-				"line" : 742,
+				"line" : 715,
 				"parent" : 2
 			}
 		]
@@ -46,26 +39,12 @@
 	"codemodelVersion" : 
 	{
 		"major" : 2,
-		"minor" : 10
+		"minor" : 11
 	},
-	"id" : "OpenGL::GLX::@6890427a1f51a3e7e1df",
+	"id" : "OpenGL::OpenGL::@6890427a1f51a3e7e1df",
 	"imported" : true,
-	"interfaceCompileDependencies" : 
-	[
-		{
-			"backtrace" : 4,
-			"id" : "OpenGL::OpenGL::@6890427a1f51a3e7e1df"
-		}
-	],
-	"interfaceLinkLibraries" : 
-	[
-		{
-			"backtrace" : 4,
-			"id" : "OpenGL::OpenGL::@6890427a1f51a3e7e1df"
-		}
-	],
 	"local" : true,
-	"name" : "OpenGL::GLX",
+	"name" : "OpenGL::OpenGL",
 	"paths" : 
 	{
 		"build" : ".",

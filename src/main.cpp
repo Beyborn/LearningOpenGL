@@ -22,6 +22,13 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "   FragColour = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
     "}\0";
 
+const char* fragmentShaderSourceYellow = "#version 330 core\n"
+    "out vec4 FragColour;\n"
+    "void main ()\n"
+    "{\n"
+    "   FragColour = vec4(1.0f, 1.0f, 0.0f, 1.0f);"
+    "}\0";
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -72,16 +79,20 @@ int main ()
 
     //This is a float array with three vertices with each vertex having a 3D position.
     // X Y Z, Z is set to 0 as we are rendering a 2D triangle
-    float vertices[] = {
-     0.5f,  0.5f, 0.0f, // top right
-     0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f  // top left
+    float triangleOne[] = {
+    -1.0f, -0.5f, 0.0f, //bottom left
+     0.0f, -0.5f, 0.0f, //bottom right
+    -0.5f,  0.5f, 0.0f, // top
+    };
+
+    float triangleTwo[] = {
+     0.0f, -0.5f, 0.0f, //bottom left
+     1.0f, -0.5f, 0.0f, //bottom right
+     0.5f,  0.5f, 0.0f, // top
     };
 
     unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+        0, 1, 2, // first triangle
     };
 
     //Creating a vertex buffer object
@@ -93,11 +104,25 @@ int main ()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     //Copying vertex data into buffer's memory
     // glBufferData(1. type of buffer, 2. size of the data, 3. actual data we want to send, 4. how we want the GPU to manage the data)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleOne), triangleOne, GL_STATIC_DRAW);
+
+    /*
+    Instead of creating a seperate VBO like this, you can create multiple at once:
+
+    unsigned int VBOs[2], VAOs[2];
+    glGenVertexArrays(2, VAOs); // we can also generate multiple VAOs or buffers at the same time
+    glGenBuffers(2, VBOs);
+
+    Then call it like an array:
+    glBindVertexArray(VAOs[0]); etc
+    */
+    unsigned int VBO2;
+    glGenBuffers(1, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleTwo), triangleTwo, GL_STATIC_DRAW);
 
     //Creating a shader object and giving it an ID
     unsigned int vertexShader{glCreateShader(GL_VERTEX_SHADER)};
-
     //Attaching the shader source code to the shader object and compling the shader
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
@@ -142,21 +167,40 @@ int main ()
     }
     //After linking, the program contains its own copy of the compiled shader code, 
     // so the individual shader objects can be deleted.
-    glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    unsigned int fragmentShaderYellow {glCreateShader(GL_FRAGMENT_SHADER)};
+    glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, NULL);
+    glCompileShader(fragmentShaderYellow);
+
+    
+    unsigned int shaderProgram2{glCreateProgram()};
+    glAttachShader(shaderProgram2, vertexShader);
+    glAttachShader(shaderProgram2, fragmentShaderYellow);
+    glLinkProgram(shaderProgram2);
+
+    glDeleteShader(fragmentShaderYellow);
+    glDeleteShader(vertexShader);
 
     //Create VAO
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
-
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //CTRL+F on "https://learnopengl.com/Getting-started/Hello-Triangle" to explain this function
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleOne), triangleOne, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
+    unsigned int VAO2;
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleTwo), triangleTwo, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //CTRL+F on "https://learnopengl.com/Getting-started/Hello-Triangle" to explain this function
 
     //Create EBO
     unsigned int EBO;
@@ -177,9 +221,14 @@ int main ()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
+
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUseProgram(shaderProgram2);
+
+        glBindVertexArray(VAO2);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
