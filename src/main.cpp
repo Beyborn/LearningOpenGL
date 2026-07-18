@@ -77,6 +77,7 @@ int main ()
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+
     //This is a float array with three vertices with each vertex having a 3D position.
     // X Y Z, Z is set to 0 as we are rendering a 2D triangle
     float triangleOne[] = {
@@ -120,6 +121,33 @@ int main ()
     glGenBuffers(1, &VBO2);
     glBindBuffer(GL_ARRAY_BUFFER, VBO2);
     glBufferData(GL_ARRAY_BUFFER, sizeof(triangleTwo), triangleTwo, GL_STATIC_DRAW);
+
+    //Create VAO
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleOne), triangleOne, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    unsigned int VAO2;
+    glGenVertexArrays(1, &VAO2);
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleTwo), triangleTwo, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //CTRL+F on "https://learnopengl.com/Getting-started/Hello-Triangle" to explain this function
+
+    //Create EBO
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    //Similar to VBO, just using GL_ELEMENT_ARRAY_BUFFER instead
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //Creating a shader object and giving it an ID
     unsigned int vertexShader{glCreateShader(GL_VERTEX_SHADER)};
@@ -181,33 +209,6 @@ int main ()
 
     glDeleteShader(fragmentShaderYellow);
     glDeleteShader(vertexShader);
-
-    //Create VAO
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleOne), triangleOne, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-
-    unsigned int VAO2;
-    glGenVertexArrays(1, &VAO2);
-    glBindVertexArray(VAO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleTwo), triangleTwo, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //CTRL+F on "https://learnopengl.com/Getting-started/Hello-Triangle" to explain this function
-
-    //Create EBO
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    //Similar to VBO, just using GL_ELEMENT_ARRAY_BUFFER instead
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //This is the render loop to keep the window open
     while (!glfwWindowShouldClose(window))
