@@ -4,6 +4,9 @@
 #include <cmath>
 #include "shader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 const unsigned int scrWidth {800};
 const unsigned int scrHeight {600};
 bool wireFrameMode {false};
@@ -58,17 +61,47 @@ int main ()
 
     Shader ourShader ("/home/byron/Documents/LearningOpenGL/src/shaders/3.3.shader.vs", "/home/byron/Documents/LearningOpenGL/src/shaders/3.3.shader.fs"); 
 
+    //start of creating a texture
+    unsigned int texture {};
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    //set the texture options (on the texure bond above)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width {};
+    int height {};
+    int nrChannels{};
+    unsigned char *data {stbi_load("/home/byron/Documents/LearningOpenGL/src/container.jpg", &width, &height, &nrChannels, 0)};
+    if (data)
+    {
+        //glTexImage2D function explination
+        // 1.Texture Target, 2.mipmap level, 3.what format, 4/5. self explanitory, 6.Always 0 (legacy), 7/8.specify format & datatype, 9.image data
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
     //This is a float array with three vertices with each vertex having a 3D position.
     // X Y Z, Z is set to 0 as we are rendering a 2D triangle
-    float triangle[] = {
-    // positions         // colors
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+    float vertices[] = {
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
 
     unsigned int indices[] = {
-        0, 1, 2, // first triangle
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
     };
 
     //Creating a vertex buffer object
@@ -80,7 +113,7 @@ int main ()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     //Copying vertex data into buffer's memory
     // glBufferData(1. type of buffer, 2. size of the data, 3. actual data we want to send, 4. how we want the GPU to manage the data)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     /*
     Instead of creating a seperate VBOs, you can create multiple at once:
@@ -98,12 +131,19 @@ open gl gl_position
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    //position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    //colour attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    //texture coord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     //Create EBO
     unsigned int EBO;
@@ -133,8 +173,9 @@ open gl gl_position
         ourShader.use();
         //ourShader.horizontalOffset(0.5f);
 
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
