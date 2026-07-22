@@ -88,7 +88,7 @@ int main ()
     unsigned int VBOs[2], VAOs[2];
     glGenVertexArrays(2, VAOs); // we can also generate multiple VAOs or buffers at the same time
     glGenBuffers(2, VBOs);
-
+open gl gl_position
     Then call it like an array:
     glBindVertexArray(VAOs[0]); etc
     */
@@ -131,6 +131,8 @@ int main ()
         glClear(GL_COLOR_BUFFER_BIT);
 
         ourShader.use();
+        //ourShader.horizontalOffset(0.5f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         

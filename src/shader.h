@@ -100,6 +100,13 @@ public:
         glUseProgram(ID);
     }
 
+    void horizontalOffset(float x)
+    {
+        int vertexHorizontalOffsetLocation {glGetUniformLocation(ID, "hOffset")};
+        glUniform1f(vertexHorizontalOffsetLocation, x);
+    }
+
+
     // utility uniform functions
     void setBool(const std::string &name, bool value) const
     {
