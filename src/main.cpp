@@ -61,10 +61,16 @@ int main ()
 
     Shader ourShader ("/home/byron/Documents/LearningOpenGL/src/shaders/3.3.shader.vs", "/home/byron/Documents/LearningOpenGL/src/shaders/3.3.shader.fs"); 
 
+    // stuff for creating textures
+
     //start of creating a texture
-    unsigned int texture {};
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    unsigned int texture1 {};
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    int width {};
+    int height {};
+    int nrChannels{};
 
     //set the texture options (on the texure bond above)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -72,9 +78,6 @@ int main ()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int width {};
-    int height {};
-    int nrChannels{};
     unsigned char *data {stbi_load("/home/byron/Documents/LearningOpenGL/src/container.jpg", &width, &height, &nrChannels, 0)};
     if (data)
     {
@@ -85,7 +88,30 @@ int main ()
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load container texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    unsigned int texture2 {};
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    //set the texture options (on the texure bond above)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
+    data =  {stbi_load("/home/byron/Documents/LearningOpenGL/src/awesomeface.png", &width, &height, &nrChannels, 0)};
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load face texture" << std::endl;
     }
     stbi_image_free(data);
 
@@ -158,6 +184,10 @@ open gl gl_position
     std::cout << "Maximum nr of vertx attributes supported: " << nrAttributes << std::endl;
     */
     
+    //Telling OpenGL which texture unt each shader smapler belongs to
+    ourShader.use();
+    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); //set manually
+    ourShader.setInt("texture2", 1); //or via the function created in the shader class
 
     //This is the render loop to keep the window open
     while (!glfwWindowShouldClose(window))
@@ -170,10 +200,12 @@ open gl gl_position
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ourShader.use();
         //ourShader.horizontalOffset(0.5f);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         
