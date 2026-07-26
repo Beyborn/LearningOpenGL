@@ -7,6 +7,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm//gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
 const unsigned int scrWidth {800};
 const unsigned int scrHeight {600};
 bool wireFrameMode {false};
@@ -88,8 +93,8 @@ int main ()
     glBindTexture(GL_TEXTURE_2D, texture2);
 
     //set the texture options (on the texure bond above)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -180,6 +185,7 @@ open gl gl_position
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); //set manually
     ourShader.setInt("texture2", 1); //or via the function created in the shader class
 
+
     //This is the render loop to keep the window open
     while (!glfwWindowShouldClose(window))
     {
@@ -202,6 +208,12 @@ open gl gl_position
         ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glm::mat4 trans {glm::mat4(1.0f)};
+        //trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(1.0, 1.0f, 1.0f));
+        unsigned int transformLoc {glGetUniformLocation(ourShader.ID, "transform")};
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         
         glfwSwapBuffers(window);
         glfwPollEvents();
